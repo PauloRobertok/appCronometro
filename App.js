@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Image, TouchableOpacity, } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 class App extends Component {
 
@@ -7,87 +7,127 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      textoFrase: '',
-      img: require('./src/biscoito.png')
+      numero: 0,
+      botao: 'Vai',
+      ultimo: null
     }
+    //Variavel timer do cronometro
+    this.timer = null;
 
-    this.quebraBiscoito = this.quebraBiscoito.bind(this)
+    this.vai = this.vai.bind(this);
+    this.limpar = this.limpar.bind(this);
 
-    this.frases = [
-      'Siga os bons e aprenda com eles.',
-      'O bom senso vale mais do que muito conhecimento.',
-      'O riso é a menor distância entre duas pessoas.',
-      'Deixe de lado as preocupações e seja feliz.',
-      'Acredite em milagres, mas não dependa deles.',
-      'A maior barreira para o sucesso é o medo do fracasso'
-    ]
-  }
-  quebraBiscoito() {
-    let numeroAleatorio = Math.floor(Math.random() * this.frases.length);
-    this.setState({
-      textoFrase: ' "' + this.frases[numeroAleatorio] + '" ', 
-      img : require ('./src/biscoitoAberto.png')
-    })
   }
 
+  vai() {
 
-  render() {
-    return (
-      <View style={styles.container}>
+    if (this.timer != null) {
+      //aqui vai parar o timer
+      clearInterval(this.timer);
+      this.timer = null;
+      this.setState({ botao: 'Vai' });
 
-        <Image
-          source={this.state.img}
-          style={styles.img}
-        />
+    }
+    else {
+      setInterval(() => {
+        this.setState({ numero: this.state.numero + 0.1 })
+      }, 100);
 
-        <Text style={styles.textoFrase} > {this.state.textoFrase}</Text>
+      this.setState({ botao: 'Parar' });
+    }
+  }
 
-        <TouchableOpacity style={styles.botao} onPress={this.quebraBiscoito}>
+  limpar() {
+    if (this.timer != null) {
+      //aqui vai limpar o timer
+      clearInterval(this.timer);
+      this.timer = null;
+      this.setState({
+        ultimo: this.state.numero,
+        numero: 0,
+        botao: "Vai"
+      })
+    }
+  }
+
+
+
+    render() {
+      return (
+        <View style={styles.container}>
+
+          <Image
+            source={require('./src/cronometro.png')}
+            style={styles.cronometro}
+          />
+
+          <Text style={styles.timer}> {this.state.numero.toFixed(1)} </Text>
+
           <View style={styles.btnArea}>
-            <Text style={styles.btnTexto}> Quebrar Biscoito</Text>
-          </View>
-        </TouchableOpacity>
 
-      </View>
-    );
-  }
+            <TouchableOpacity style={styles.btn} onPress={this.vai}>
+              <Text style={styles.btnTexto}>{this.state.botao}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.btn} onPress={this.limpar}>
+              <Text style={styles.btnTexto}>LIMPAR</Text>
+            </TouchableOpacity>
+
+          </View>
+
+
+          <View style={styles.areaUltima}>
+            <Text style={styles.textoCorrida}>
+              {this.state.ultimo > 0 ? 'Ultimo tempo ' + this.state.ultimo.toFixed(2) + ' s' : ''}
+            </Text>
+          </View>
+
+        </View>
+      )
+    };
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  img: {
-    width: 250,
-    height: 250,
-  },
-  textoFrase: {
-    fontSize: 20,
-    color: '#dd7b22',
-    margin: 30,
-    fontStyle: 'italic',
-    textAlign: 'center'
-  },
-  botao: {
-    width: 230,
-    height: 50,
-    borderWidth: 2,
-    borderColor: '#dd7b22',
-    borderRadius: 25,
-  },
-  btnArea: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  btnTexto: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#dd7b22'
-  }
-})
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#00aeef'
+    },
+    timer: {
+      marginTop: 160,
+      color: '#FFF',
+      fontSize: 65,
+      fontWeight: 'bold'
+    },
+    btnArea: {
+      flexDirection: 'center',
+      marginTop: 70,
+      height: 40
 
+    },
+    btn: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: '#FFF',
+      height: 40,
+      margin: 7,
+      borderRadius: 9,
+
+    },
+    btnTexto: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color:  '#00aeef',
+    },
+    areaUltima: {
+      marginTop: 40,
+    },
+    textoCorrida: {
+      fontSize: 25,
+      fontStyle: 'italic',
+      color: '#FFF'
+    },
+  })
 export default App;
